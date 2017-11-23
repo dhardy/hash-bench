@@ -21,11 +21,9 @@ macro_rules! hash64_u64 {
     ($fnn:ident, $hash:ident) => {
         #[bench]
         fn $fnn(b: &mut Bencher) {
-            // prime RNG
-            let _: u64 = random();
+            let mut x: u64 = random();
             
             b.iter(|| {
-                let mut x: u64 = random();
                 for _ in 0..N64 {
                     x = x.wrapping_add(1);  // unique number each time
                     let mut hash = $hash::new();
@@ -49,16 +47,14 @@ macro_rules! hash64_bytes {
     ($fnn:ident, $hash:ident, $L:expr, $N:expr) => {
         #[bench]
         fn $fnn(b: &mut Bencher) {
-            // prime RNG
-            let _: u64 = random();
+            let mut x: [u64; $L] = random();
             
             b.iter(|| {
-                let mut x: [u64; $L] = random();
                 for _ in 0..$N {
                     x[0] = x[0].wrapping_add(1);  // unique number each time
-                    let mut hash = $hash::new();
                     let p = &x[0] as *const u64 as *const u8;
                     let slice = unsafe { from_raw_parts(p, x.len() * 8) };
+                    let mut hash = $hash::new();
                     hash.write(slice);
                     black_box(hash.finish());
                 }
@@ -87,11 +83,9 @@ macro_rules! hash64_buf_sea {
     ($fnn:ident, $L:expr, $N: expr) => {
         #[bench]
         fn $fnn(b: &mut Bencher) {
-            // prime RNG
-            let _: u64 = random();
+            let mut x: [u64; $L] = random();
             
             b.iter(|| {
-                let mut x: [u64; $L] = random();
                 for _ in 0..$N {
                     x[0] = x[0].wrapping_add(1);  // unique number each time
                     let p = &x[0] as *const u64 as *const u8;
