@@ -1,0 +1,9 @@
+[package]
+name = "hash-bench"
+version = "0.1.0"
+authors = ["Diggory Hardy <git@dhardy.name>"]
+
+[dependencies]
+rand = "0.3"
+seahash = "3.0"
+metrohash = { version = "1.0", path = "../metrohash-rs" }
