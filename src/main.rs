@@ -1,12 +1,7 @@
-extern crate seahash;
-extern crate metrohash;
+extern crate hash_bench;
 
+use hash_bench::*;
 use std::hash::Hasher;
-use metrohash::MetroHash128;
-use seahash::SeaHasher;
-use highwayhash::HighwayHash;
-
-mod highwayhash;
 
 fn main() {
     let text = "Hello, world!";

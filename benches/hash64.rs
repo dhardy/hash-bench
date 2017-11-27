@@ -2,8 +2,7 @@
 
 // Benchmarks for 64-bit output
 
-extern crate seahash;
-extern crate metrohash;
+extern crate hash_bench;
 extern crate rand;
 extern crate test;
 
@@ -12,9 +11,7 @@ use std::slice::from_raw_parts;
 use test::{black_box, Bencher};
 use rand::random;
 
-use metrohash::MetroHash64;
-use seahash::SeaHasher;
-use seahash::State as SeaHash;
+use hash_bench::*;
 
 const N64: u64 = 100;
 
