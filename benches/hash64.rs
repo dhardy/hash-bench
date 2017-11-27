@@ -14,6 +14,7 @@ use rand::random;
 
 use metrohash::MetroHash64;
 use seahash::SeaHasher;
+use seahash::State as SeaHash;
 
 const N64: u64 = 100;
 
@@ -59,7 +60,7 @@ macro_rules! hash64_bytes {
                     black_box(hash.finish());
                 }
             });
-            b.bytes = 8 * $N;
+            b.bytes = 8 * $L * $N;
         }
     }
 }
@@ -90,10 +91,11 @@ macro_rules! hash64_buf_sea {
                     x[0] = x[0].wrapping_add(1);  // unique number each time
                     let p = &x[0] as *const u64 as *const u8;
                     let slice = unsafe { from_raw_parts(p, x.len() * 8) };
-                    black_box(::seahash::hash(slice));
+                    let hash = SeaHash::hash(slice, (0x16f11fe89b0d677c, 0xb480a793d8e6c86c, 0x6fe2e5aaf078ebc9, 0x14f994a4c5259381));
+                    black_box(hash.finalize());
                 }
             });
-            b.bytes = 8 * $N;
+            b.bytes = 8 * $L * $N;
         }
     }
 }
