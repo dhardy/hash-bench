@@ -46,7 +46,7 @@ impl HighwayHash {
     /// 
     /// Convenience function around `new`, `write` and `finalize_64`.
     pub fn hash_64(key: [u64; 4], data: &[u8]) -> u64 {
-        let mut hasher = HighwayHash::new(key);
+        let mut hasher = HighwayHash::new_key(key);
         hasher.write(data);
         hasher.finalize_64()
     }
@@ -55,7 +55,7 @@ impl HighwayHash {
     /// 
     /// Convenience function around `new`, `write` and `finalize_128`.
     pub fn hash_128(key: [u64; 4], data: &[u8]) -> [u64; 2] {
-        let mut hasher = HighwayHash::new(key);
+        let mut hasher = HighwayHash::new_key(key);
         hasher.write(data);
         hasher.finalize_128()
     }
@@ -64,14 +64,14 @@ impl HighwayHash {
     /// 
     /// Convenience function around `new`, `write` and `finalize_256`.
     pub fn hash_256(key: [u64; 4], data: &[u8]) -> [u64; 4] {
-        let mut hasher = HighwayHash::new(key);
+        let mut hasher = HighwayHash::new_key(key);
         hasher.write(data);
         hasher.finalize_256()
     }
     
     
     /// Creates a state with the given key
-    pub fn new(key: [u64; 4]) -> Self {
+    pub fn new_key(key: [u64; 4]) -> Self {
         fn swap(x: u64) -> w64 { w(x >> 32 | x << 32) }
         
         let mul0 = [w(0xdbe6d5d5fe4cce2fu64),
@@ -95,9 +95,9 @@ impl HighwayHash {
     }
     
     /// Creates a new state with a fixed key
-    pub fn new_fixed() -> Self {
+    pub fn new() -> Self {
         // some hard-coded random numbers
-        HighwayHash::new([0x4ae1e91cf3b5737a, 0x4ea5ac492013cced,
+        HighwayHash::new_key([0x4ae1e91cf3b5737a, 0x4ea5ac492013cced,
                 0xb34430a80d547e23, 0xa77ddfe31c89436d])
     }
     
@@ -198,6 +198,9 @@ impl HighwayHash {
         zipper_merge_and_add!(self.v0[3], self.v0[2], &mut self.v1[3], &mut self.v1[2]);
     }
     
+    
+    /// Rebind
+    pub fn finish(self) -> u64 { self.finalize_64() }
     
     /// Compute the final hash value.
     pub fn finalize_64(mut self) -> u64 {

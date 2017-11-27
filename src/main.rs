@@ -15,7 +15,7 @@ fn main() {
     hasher.write(text.as_bytes());
     println!("SeaHasher: {}", hasher.finish());
     
-    let mut hasher = HighwayHash::new_fixed();
+    let mut hasher = HighwayHash::new();
     hasher.write(text.as_bytes());
     println!("HighwayHash: {}", hasher.finalize_64());
 }

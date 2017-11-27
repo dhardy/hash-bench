@@ -38,6 +38,7 @@ macro_rules! hash64_u64 {
 // Does not depend on whether other bench is *run*. Weird optimisation behaviour?
 hash64_u64!(hash64_u64_metro, MetroHash64);
 hash64_u64!(hash64_u64_sea, SeaHasher);
+// hash64_u64!(hash64_u64_highway, HighwayHash);
 
 
 macro_rules! hash64_bytes {
@@ -66,15 +67,19 @@ macro_rules! hash64_bytes {
 // Observation: SeaHash is much slower!
 hash64_bytes!(hash64_bytes_1_metro, MetroHash64, 1, 100);
 hash64_bytes!(hash64_bytes_1_sea, SeaHasher, 1, 100);
+hash64_bytes!(hash64_bytes_1_highway, HighwayHash, 1, 100);
 
 hash64_bytes!(hash64_bytes_2_metro, MetroHash64, 2, 50);
 hash64_bytes!(hash64_bytes_2_sea, SeaHasher, 2, 50);
+hash64_bytes!(hash64_bytes_2_highway, HighwayHash, 2, 50);
 
 hash64_bytes!(hash64_bytes_4_metro, MetroHash64, 4, 25);
 hash64_bytes!(hash64_bytes_4_sea, SeaHasher, 4, 25);
+hash64_bytes!(hash64_bytes_4_highway, HighwayHash, 4, 25);
 
 hash64_bytes!(hash64_bytes_25_metro, MetroHash64, 25, 4);
 hash64_bytes!(hash64_bytes_25_sea, SeaHasher, 25, 4);
+hash64_bytes!(hash64_bytes_25_highway, HighwayHash, 25, 4);
 
 // SeaHash allows usage via a different interface, more optimal?
 macro_rules! hash64_buf_sea {
