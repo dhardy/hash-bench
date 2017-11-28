@@ -69,10 +69,6 @@ hash64_bytes!(hash64_bytes_1_metro, MetroHash64, 1, 100);
 hash64_bytes!(hash64_bytes_1_sea, SeaHasher, 1, 100);
 hash64_bytes!(hash64_bytes_1_highway, HighwayHash, 1, 100);
 
-hash64_bytes!(hash64_bytes_2_metro, MetroHash64, 2, 50);
-hash64_bytes!(hash64_bytes_2_sea, SeaHasher, 2, 50);
-hash64_bytes!(hash64_bytes_2_highway, HighwayHash, 2, 50);
-
 hash64_bytes!(hash64_bytes_4_metro, MetroHash64, 4, 25);
 hash64_bytes!(hash64_bytes_4_sea, SeaHasher, 4, 25);
 hash64_bytes!(hash64_bytes_4_highway, HighwayHash, 4, 25);
@@ -103,6 +99,5 @@ macro_rules! hash64_buf_sea {
 }
 
 hash64_buf_sea!(hash64_buf_1_sea, 1, 100);
-hash64_buf_sea!(hash64_buf_2_sea, 2, 50);
 hash64_buf_sea!(hash64_buf_4_sea, 4, 25);
 hash64_buf_sea!(hash64_buf_25_sea, 25, 4);

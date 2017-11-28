@@ -57,7 +57,7 @@ macro_rules! hash128_bytes {
                     black_box(hash.finish128());
                 }
             });
-            b.bytes = 8 * $N;
+            b.bytes = 8 * $L * $N;
         }
     }
 }
@@ -65,9 +65,6 @@ macro_rules! hash128_bytes {
 // Same as previous test, except as a byte sequence.
 hash128_bytes!(hash128_bytes_1_metro, MetroHash128, 1, 100);
 // hash128_bytes!(hash128_bytes_1_sea, SeaHasher, 1, 100);
-
-hash128_bytes!(hash128_bytes_2_metro, MetroHash128, 2, 50);
-// hash128_bytes!(hash128_bytes_2_sea, SeaHasher, 2, 50);
 
 hash128_bytes!(hash128_bytes_4_metro, MetroHash128, 4, 25);
 // hash128_bytes!(hash128_bytes_4_sea, SeaHasher, 4, 25);
