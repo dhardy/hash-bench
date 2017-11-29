@@ -44,7 +44,6 @@ fn KeccakP1600onLanes(lanes: &mut [[u64; 5]; 5], nrRounds: u32) {
             for x in 0..5 {
                 C[x] = lanes[x].iter().fold(0, |a, b| a ^ b);
             }
-            println!("{:?}", C);
             
             let mut D = [0u64; 5];
             for x in 0..5 {
