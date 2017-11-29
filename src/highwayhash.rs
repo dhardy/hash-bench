@@ -168,7 +168,7 @@ impl HighwayHash {
         
         self.update_packet(&packet);
     }
-    
+    /*
     fn update(&mut self, lanes: [w64; 4]) {
         macro_rules! zipper_merge_and_add {
             ($v1:expr, $v0:expr, $add1:expr, $add0:expr) => {{
@@ -181,8 +181,8 @@ impl HighwayHash {
                         (v1 & 0xff0000) | ((v1 & 0xff0000000000) >> 16) |
                         ((v1 & 0xff00) << 24) | ((v0 & 0xff000000000000) >> 8) |
                         ((v1 & 0xff) << 48) | (v0 & 0xff00000000000000);
-                *$add0 += w(x);
-                *$add1 += w(y);
+                $add0 += w(x);
+                $add1 += w(y);
             }}
         }
         
@@ -192,10 +192,40 @@ impl HighwayHash {
             self.v0[i] += self.mul1[i];
             self.mul1[i] ^= (self.v0[i] & w(0xFFFFFFFF)) * (self.v1[i] >> 32);
         }
-        zipper_merge_and_add!(self.v1[1], self.v1[0], &mut self.v0[1], &mut self.v0[0]);
-        zipper_merge_and_add!(self.v1[3], self.v1[2], &mut self.v0[3], &mut self.v0[2]);
-        zipper_merge_and_add!(self.v0[1], self.v0[0], &mut self.v1[1], &mut self.v1[0]);
-        zipper_merge_and_add!(self.v0[3], self.v0[2], &mut self.v1[3], &mut self.v1[2]);
+        zipper_merge_and_add!(self.v1[1], self.v1[0], self.v0[1], self.v0[0]);
+        zipper_merge_and_add!(self.v1[3], self.v1[2], self.v0[3], self.v0[2]);
+        zipper_merge_and_add!(self.v0[1], self.v0[0], self.v1[1], self.v1[0]);
+        zipper_merge_and_add!(self.v0[3], self.v0[2], self.v1[3], self.v1[2]);
+    }
+    */
+    fn update(&mut self, lanes: [w64; 4]) {
+        fn zipper_merge_and_add(v1: w64, v0: w64) -> (w64, w64) {
+            let (v0, v1) = (v0.0, v1.0);
+            let x = (((v0 & 0xff000000) | (v1 & 0xff00000000)) >> 24) |
+                    (((v0 & 0xff0000000000) | (v1 & 0xff000000000000)) >> 16) |
+                    (v0 & 0xff0000) | ((v0 & 0xff00) << 32) |
+                    ((v1 & 0xff00000000000000) >> 8) | (v0 << 56);
+            let y = (((v1 & 0xff000000) | (v0 & 0xff00000000)) >> 24) |
+                    (v1 & 0xff0000) | ((v1 & 0xff0000000000) >> 16) |
+                    ((v1 & 0xff00) << 24) | ((v0 & 0xff000000000000) >> 8) |
+                    ((v1 & 0xff) << 48) | (v0 & 0xff00000000000000);
+            (w(x), w(y))
+        }
+        
+        for i in 0..4 {
+            self.v1[i] += self.mul0[i] + lanes[i];
+            self.mul0[i] ^= (self.v1[i] & w(0xFFFFFFFF)) * (self.v0[i] >> 32);
+            self.v0[i] += self.mul1[i];
+            self.mul1[i] ^= (self.v0[i] & w(0xFFFFFFFF)) * (self.v1[i] >> 32);
+        }
+        let (x, y) = zipper_merge_and_add(self.v1[1], self.v1[0]);
+        self.v0[1] = y; self.v0[0] = x;
+        let (x, y) = zipper_merge_and_add(self.v1[3], self.v1[2]);
+        self.v0[3] = y; self.v0[2] = x;
+        let (x, y) = zipper_merge_and_add(self.v0[1], self.v0[0]);
+        self.v1[1] = y; self.v1[0] = x;
+        let (x, y) = zipper_merge_and_add(self.v0[3], self.v0[2]);
+        self.v1[3] = y; self.v1[2] = x;
     }
     
     

@@ -18,4 +18,8 @@ fn main() {
     let mut hasher = HighwayHash::new();
     hasher.write(text.as_bytes());
     println!("HighwayHash: {}", hasher.finalize_64());
+    
+    let result = KangarooTwelve(text, "", 64);
+    let result = unsafe{ *(&result[0] as *const u8 as *const u64) }.to_le();
+    println!("KangarooTwelve: {}", result);
 }
