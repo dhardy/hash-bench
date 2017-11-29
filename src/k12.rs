@@ -138,43 +138,50 @@ fn write_u64(val: u64) -> [u8; 8] {
 
 fn KeccakP1600(state: &mut [u8; 200]) {
     let mut lanes = [0u64; 25];
+    let mut y;
     for x in 0..5 {
-        for y in 0..5 {
-            lanes[x + 5*y] = read_u64(array_ref!(state, 8*(x+5*y), 8));
-        }
+        FOR5!(y, 5, {
+            lanes[x + y] = read_u64(array_ref!(state, 8*(x+y), 8));
+        });
     }
     KeccakP1600onLanes(&mut lanes);
     for x in 0..5 {
-        for y in 0..5 {
-            let i = 8*(x+5*y);  // TODO index
-            state[i..i+8].copy_from_slice(&write_u64(lanes[x + 5*y]));
-        }
+        FOR5!(y, 5, {
+            let i = 8*(x+y);
+            state[i..i+8].copy_from_slice(&write_u64(lanes[x + y]));
+        });
     }
 }
 
 fn F(inputBytes: &[u8], delimitedSuffix: u8, mut outputByteLen: usize) -> Vec<u8> {
     let mut state = [0u8; 200];
     let rateInBytes = 1344 / 8;
-    let mut blockSize = 0;
-    let mut inputOffset = 0;
     
     // === Absorb all the input blocks ===
+    // We unroll first loop, which allows simple copy
+    let mut blockSize = min(inputBytes.len(), rateInBytes);
+    state[0..blockSize].copy_from_slice(&inputBytes[0..blockSize]);
+    
+    let mut inputOffset = blockSize;
     while inputOffset < inputBytes.len() {
+        KeccakP1600(&mut state);
         blockSize = min(inputBytes.len() - inputOffset, rateInBytes);
         for i in 0..blockSize {
             // TODO: is this sufficiently optimisable or better to convert to u64 first?
             state[i] ^= inputBytes[i+inputOffset];
         }
         inputOffset += blockSize;
-        if blockSize == rateInBytes {
-            KeccakP1600(&mut state);
-            blockSize = 0;
-        }
+    }
+    if blockSize == rateInBytes {
+        KeccakP1600(&mut state);
+        blockSize = 0;
     }
     
     // === Do the padding and switch to the squeezing phase ===
     state[blockSize] ^= delimitedSuffix;
     if ((delimitedSuffix & 0x80) != 0) && (blockSize == (rateInBytes-1)) {
+        // TODO: condition is almost always false — in fact tests pass without
+        // this block! So why is it here?
         KeccakP1600(&mut state);
     }
     state[rateInBytes-1] ^= 0x80;
