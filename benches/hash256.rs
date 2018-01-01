@@ -13,7 +13,10 @@ use rand::random;
 use hash_bench::*;
 
 fn k12(bytes: &[u8]) -> Vec<u8> {
-    KangarooTwelve(bytes, "", 256)
+    kangaroo_twelve(bytes, "", 32)  // 32 * 8 = 256
+}
+fn k12s(bytes: &[u8]) -> [u8; 32] {
+    hash_bench::k12s(bytes)
 }
 
 macro_rules! hash256_bytes {
@@ -43,3 +46,15 @@ hash256_bytes!(hash256_u64arr_25_keccak, keccak, 25, 4);
 hash256_bytes!(hash256_u64arr_1_k12, k12, 1, 100);
 hash256_bytes!(hash256_u64arr_4_k12, k12, 4, 25);
 hash256_bytes!(hash256_u64arr_25_k12, k12, 25, 4);
+
+hash256_bytes!(hash256_u64arr_1_k12s, k12s, 1, 100);
+hash256_bytes!(hash256_u64arr_4_k12s, k12s, 4, 25);
+hash256_bytes!(hash256_u64arr_25_k12s, k12s, 25, 4);
+
+hash256_bytes!(hash256_u64arr_1_sha2, sha512_trunc256, 1, 100);
+hash256_bytes!(hash256_u64arr_4_sha2, sha512_trunc256, 4, 25);
+hash256_bytes!(hash256_u64arr_25_sha2, sha512_trunc256, 25, 4);
+
+hash256_bytes!(hash256_u64arr_1_sha3, sha3_256, 1, 100);
+hash256_bytes!(hash256_u64arr_4_sha3, sha3_256, 4, 25);
+hash256_bytes!(hash256_u64arr_25_sha3, sha3_256, 25, 4);
